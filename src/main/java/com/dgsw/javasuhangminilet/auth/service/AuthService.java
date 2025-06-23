@@ -1,6 +1,7 @@
 package com.dgsw.javasuhangminilet.auth.service;
 
 import com.dgsw.javasuhangminilet.auth.dto.AuthRequest;
+import com.dgsw.javasuhangminilet.auth.dto.response.LoginResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.RegisterResponse;
 import com.dgsw.javasuhangminilet.auth.entity.UserEntity;
 import com.dgsw.javasuhangminilet.auth.repository.AuthRepository;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,12 +30,7 @@ public class AuthService {
             if (authRepository.existsByName(authRequest.name())) {
                 return BaseResponse.error(ResponseCode.DUPLICATE_RESOURCE, "이미 존재하는 사용자명입니다.");
             }
-
-            // 2. 비밀번호 암호화
-
-            // 3. 토큰 생성 (실제로는 JWT 토큰 생성 로직 사용)
-            String token = generateToken(authRequest.name());
-
+            
             // 4. 사용자 저장
             UserEntity user = UserEntity.builder()
                     .password(authRequest.password())
@@ -63,4 +60,14 @@ public class AuthService {
         return UUID.randomUUID().toString();
     }
 
+    public BaseResponse<LoginResponse> login(AuthRequest authRequest) {
+        Optional<UserEntity> user = authRepository.findByName(authRequest.name());
+        if (user.isEmpty()) {
+            return BaseResponse.error("실패");
+        }
+        if (authRequest.name().equals(user.get().getName()) && authRequest.password().equals(user.get().getPassword())) {
+            return BaseResponse.success(new LoginResponse(user.get().getToken()));
+         }
+        return BaseResponse.error(ResponseCode.NOT_FOUND,"비밀번호나 이름이 틀렸습니다.");
+    }
 }

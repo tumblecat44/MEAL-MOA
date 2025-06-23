@@ -1,6 +1,7 @@
 package com.dgsw.javasuhangminilet.auth.controller;
 
 import com.dgsw.javasuhangminilet.auth.dto.AuthRequest;
+import com.dgsw.javasuhangminilet.auth.dto.response.LoginResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.RegisterResponse;
 import com.dgsw.javasuhangminilet.auth.service.AuthService;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
@@ -16,5 +17,10 @@ public class AuthController {
     @PostMapping("/register")
     public BaseResponse<RegisterResponse> register(AuthRequest authRequest) {
         return authService.register(authRequest);
+    }
+
+    @PostMapping("/login")
+    public BaseResponse<LoginResponse> login(AuthRequest authRequest) {
+        return authService.login(authRequest);
     }
 }
