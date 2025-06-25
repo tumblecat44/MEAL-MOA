@@ -75,22 +75,28 @@ public class ReviewService {
 
     }
 
-    public BaseResponse<String> updateReview(Long id, UpdateReviewRequest dto) {
+    public BaseResponse<String> updateReview(Long id, UpdateReviewRequest dto, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
         if(optional == null){
             return BaseResponse.error("존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
+        if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
+            return BaseResponse.error("본인 글만 수정 가능합니다.");
+        }
         existingReview.setTitle(dto.getTitle());
         existingReview.setContent(dto.getContent());
         reviewRepository.save(existingReview);
         return BaseResponse.success("updated");
     }
 
-    public BaseResponse<String> deleteReview(Long id) {
+    public BaseResponse<String> deleteReview(Long id, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
-        if(optional == null){
+        if(optional == null ){
             return BaseResponse.error("존재하지 않음");
+        }
+        if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
+            return BaseResponse.error("본인 글만 삭제 가능합니다.");
         }
         ReviewEntity existingReview = optional.get();
         reviewRepository.delete(existingReview);
