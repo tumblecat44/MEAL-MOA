@@ -7,8 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewDTO {
-    private Long id;
-    private Long userId;
+    private String token;
     private String title;
     private String content;
 }
