@@ -1,6 +1,8 @@
 package com.dgsw.javasuhangminilet.review.service;
 
+import com.dgsw.javasuhangminilet.review.dto.CreateReviewDTO;
 import com.dgsw.javasuhangminilet.review.dto.ReviewDTO;
+import com.dgsw.javasuhangminilet.review.dto.UpdateReviewDTO;
 import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,7 @@ public class ReviewService {
     @Autowired
     ReviewRepository reviewRepository;
 
-    public boolean addReview(ReviewDTO dto) {
+    public boolean addReview(CreateReviewDTO dto) {
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setUserId(dto.getUserId());
         reviewEntity.setTitle(dto.getTitle());
@@ -28,7 +30,6 @@ public class ReviewService {
     public List<ReviewDTO> getAllReviews() {
         return reviewRepository.findAll().stream().map(entity -> {
             ReviewDTO dto = new ReviewDTO();
-            dto.setId(entity.getId());
             dto.setUserId(entity.getUserId());
             dto.setTitle(entity.getTitle());
             dto.setContent(entity.getContent());
@@ -36,7 +37,7 @@ public class ReviewService {
         }).collect(Collectors.toList());
     }
 
-    public boolean updateReview(Long id, ReviewDTO dto) {
+    public boolean updateReview(Long id, UpdateReviewDTO dto) {
         // 기존 리뷰를 ID로 찾기
         ReviewEntity existing = reviewRepository.findById(id).orElse(null);
         if (existing == null) return false;
