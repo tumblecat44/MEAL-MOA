@@ -11,6 +11,7 @@ import com.dgsw.javasuhangminilet.util.ResponseCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class AuthService {
 
     private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public BaseResponse<RegisterResponse> register(AuthRequest authRequest) {
         try {
@@ -34,7 +36,7 @@ public class AuthService {
 
             // 4. 사용자 저장
             UserEntity user = UserEntity.builder()
-                    .password(authRequest.password())
+                    .password(passwordEncoder.encode(authRequest.password()))
                     .name(authRequest.name())
                     .build();
 
@@ -66,9 +68,13 @@ public class AuthService {
         if (user.isEmpty()) {
             return BaseResponse.error(ResponseCode.NOT_FOUND, "그런 사람 또 없습니다..");
         }
-        if (authRequest.name().equals(user.get().getName()) && authRequest.password().equals(user.get().getPassword())) {
-            return BaseResponse.success(new LoginResponse(user.get().getToken()));
+
+        UserEntity foundUser = user.get();
+
+        if (passwordEncoder.matches(authRequest.password(), foundUser.getPassword())) {
+            return BaseResponse.success(new LoginResponse(foundUser.getToken()));
         }
+
         return BaseResponse.error(ResponseCode.NOT_FOUND, "Wrong Password.");
     }
 
