@@ -95,6 +95,7 @@ public class ReviewService {
         if(optional == null ){
             return BaseResponse.error("존재하지 않음");
         }
+        ReviewEntity existingReview = optional.get();
         if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
             return BaseResponse.error("본인 글만 삭제 가능합니다.");
         }
