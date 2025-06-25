@@ -1,6 +1,5 @@
 package com.dgsw.javasuhangminilet.review.service;
 
-import com.dgsw.javasuhangminilet.review.dto.ResponseDTO;
 import com.dgsw.javasuhangminilet.review.dto.ReviewDTO;
 import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
