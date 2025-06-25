@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-public class reviewController {
+public class ReviewController {
     ReviewService reviewService;
 
     @PostMapping("/review")
