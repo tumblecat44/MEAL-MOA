@@ -1,8 +1,10 @@
 package com.dgsw.javasuhangminilet.auth.entity;
 
+import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -28,6 +30,9 @@ public class UserEntity {
 
     @Column(length = 500)
     private String token;
+
+    @OneToMany
+    private List<ReviewEntity> reviews;
 
     // 비즈니스 로직용 생성자
     public UserEntity(String password, String name, String token) {
