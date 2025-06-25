@@ -2,9 +2,12 @@ package com.dgsw.javasuhangminilet.review.controlller;
 
 import com.dgsw.javasuhangminilet.review.dto.*;
 import com.dgsw.javasuhangminilet.review.dto.request.AddReviewRequest;
+import com.dgsw.javasuhangminilet.review.dto.request.UpdateReviewRequest;
 import com.dgsw.javasuhangminilet.review.dto.response.ReviewResponse;
+import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
 import com.dgsw.javasuhangminilet.review.service.ReviewService;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
+import com.dgsw.javasuhangminilet.util.ResponseCode;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +34,14 @@ public class ReviewController {
         return reviewService.getAllReviews(token);
     }
 
-    @PatchMapping("/update/{id}")
-    public BaseResponse<String> updateReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
-        return reviewService.updateReview(id, dto);
+    @PutMapping("/update/{id}")
+    public BaseResponse<ResponseCode> updateReview(@PathVariable Long id, @RequestBody @Valid UpdateReviewRequest dto, @Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+        return reviewService.updateReview(id, dto, token);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public BaseResponse<ResponseCode> deleteReview(@PathVariable Long id, @Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+        return reviewService.deleteReview(id, token);
     }
 //
 //    @DeleteMapping("/update/{id}")
