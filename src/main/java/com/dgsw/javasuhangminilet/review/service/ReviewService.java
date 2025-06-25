@@ -44,7 +44,7 @@ public class ReviewService {
         );
         ReviewResponse response = new ReviewResponse(
                 savedEntity.getId(),
-                savedEntity.getUser(),
+                savedEntity.getUser().getId(),
                 savedEntity.getTitle(),
                 savedEntity.getContent()
         );
@@ -53,16 +53,26 @@ public class ReviewService {
 
 
 
-    public BaseResponse<List<ReviewResponse>> getAllReviews() {
-        List<ReviewResponse> reviews = reviewRepository.findAll().stream()
-                .map(entity -> new ReviewResponse(
-                        entity.getId(),
-                        entity.getUser(),
-                        entity.getTitle(),
-                        entity.getContent()
-                ))
-                .collect(Collectors.toList());
-        return BaseResponse.success(reviews);
+    public BaseResponse<List<ReviewResponse>> getAllReviews(String token) {
+        try{
+            getUserFromToken(token);
+        } catch (Exception e) {
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "권한이 없습니다.");
+        }
+        try {
+            List<ReviewResponse> reviews = reviewRepository.findAll().stream()
+                    .map(entity -> new ReviewResponse(
+                            entity.getId(),
+                            entity.getUser().getId(),
+                            entity.getTitle(),
+                            entity.getContent()
+                    ))
+                    .collect(Collectors.toList());
+            return BaseResponse.success(reviews);
+        } catch (Exception e) {
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "권한이 없습니다.");
+        }
+
     }
 
     public BaseResponse<String> updateReview(Long id, ReviewDTO dto) {

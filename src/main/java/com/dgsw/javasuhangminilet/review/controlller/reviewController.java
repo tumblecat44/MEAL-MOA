@@ -27,8 +27,8 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews")
-    public BaseResponse<List<ReviewResponse>> getAllReviews() {
-        return reviewService.getAllReviews();
+    public BaseResponse<List<ReviewResponse>> getAllReviews(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+        return reviewService.getAllReviews(token);
     }
 
     @PatchMapping("/update/{id}")
