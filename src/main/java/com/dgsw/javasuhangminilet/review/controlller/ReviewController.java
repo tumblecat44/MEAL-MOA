@@ -2,7 +2,10 @@ package com.dgsw.javasuhangminilet.review.controlller;
 
 import com.dgsw.javasuhangminilet.review.dto.*;
 import com.dgsw.javasuhangminilet.review.dto.request.AddReviewRequest;
+import com.dgsw.javasuhangminilet.review.dto.request.UpdateReviewRequest;
 import com.dgsw.javasuhangminilet.review.dto.response.ReviewResponse;
+import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
+import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
 import com.dgsw.javasuhangminilet.review.service.ReviewService;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
     private final ReviewService reviewService;
+    private final ReviewRepository reviewRepository;
 
     @PostMapping("/review")
     public BaseResponse<ReviewResponse> addReview(@RequestBody @Valid AddReviewRequest dto,@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
@@ -31,8 +35,8 @@ public class ReviewController {
         return reviewService.getAllReviews(token);
     }
 
-    @PatchMapping("/update/{id}")
-    public BaseResponse<String> updateReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
+    @PutMapping("/update/{id}")
+    public BaseResponse<String> updateReview(@PathVariable Long id, @RequestBody @Valid UpdateReviewRequest dto, @Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         return reviewService.updateReview(id, dto);
     }
 //

@@ -3,6 +3,7 @@ package com.dgsw.javasuhangminilet.review.service;
 import com.dgsw.javasuhangminilet.auth.entity.UserEntity;
 import com.dgsw.javasuhangminilet.auth.repository.AuthRepository;
 import com.dgsw.javasuhangminilet.review.dto.ReviewDTO;
+import com.dgsw.javasuhangminilet.review.dto.request.UpdateReviewRequest;
 import com.dgsw.javasuhangminilet.review.dto.response.ReviewResponse;
 import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
@@ -11,7 +12,6 @@ import com.dgsw.javasuhangminilet.util.ResponseCode;
 import com.dgsw.javasuhangminilet.util.TokenClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,8 +75,14 @@ public class ReviewService {
 
     }
 
-    public BaseResponse<String> updateReview(Long id, ReviewDTO dto) {
-        return BaseResponse.success("TODO");
+    public BaseResponse<String> updateReview(Long id, UpdateReviewRequest dto) {
+        ReviewEntity existingReview = reviewRepository.findById(id).orElse(null);
+        if(existingReview == null){
+            return BaseResponse.error("update faild");
+        }
+        existingReview.setTitle(dto.getTitle());
+        existingReview.setContent(dto.getContent());
+        return BaseResponse.success("updated");
     }
 //
 //    public BaseResponse<String> deleteReview(Long id,String token ) {
