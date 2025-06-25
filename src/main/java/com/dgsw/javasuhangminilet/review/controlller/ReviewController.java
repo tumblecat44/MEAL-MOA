@@ -39,6 +39,11 @@ public class ReviewController {
     public BaseResponse<String> updateReview(@PathVariable Long id, @RequestBody @Valid UpdateReviewRequest dto, @Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         return reviewService.updateReview(id, dto);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public BaseResponse<String> deleteReview(@PathVariable Long id) {
+        return reviewService.deleteReview(id);
+    }
 //
 //    @DeleteMapping("/update/{id}")
 //    public BaseResponse<String> deleteReview(@PathVariable Long id, @RequestHeader("Authorization") String token) {
