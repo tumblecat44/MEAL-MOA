@@ -12,6 +12,7 @@ import com.dgsw.javasuhangminilet.util.ResponseCode;
 import com.dgsw.javasuhangminilet.util.TokenClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,32 +76,32 @@ public class ReviewService {
 
     }
 
-    public BaseResponse<String> updateReview(Long id, UpdateReviewRequest dto, String token) {
+    public BaseResponse<ResponseCode> updateReview(Long id, UpdateReviewRequest dto, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
         if(optional.isEmpty()){
-            return BaseResponse.error("존재하지 않음");
+            return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
         if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
-            return BaseResponse.error("본인 글만 수정 가능합니다.");
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
         }
         existingReview.setTitle(dto.getTitle());
         existingReview.setContent(dto.getContent());
         reviewRepository.save(existingReview);
-        return BaseResponse.success("updated");
+        return BaseResponse.success(ResponseCode.SUCCESS, "updated");
     }
 
-    public BaseResponse<String> deleteReview(Long id, String token) {
+    public BaseResponse<ResponseCode> deleteReview(Long id, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
         if(optional.isEmpty()){
-            return BaseResponse.error("존재하지 않음");
+            return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
         if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
-            return BaseResponse.error("본인 글만 삭제 가능합니다.");
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
         }
         reviewRepository.delete(existingReview);
-        return BaseResponse.success("deleted");
+        return BaseResponse.success(ResponseCode.SUCCESS, "deleted");
     }
 //
 //    public BaseResponse<String> deleteReview(Long id,String token ) {
