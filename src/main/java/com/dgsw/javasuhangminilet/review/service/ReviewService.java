@@ -1,52 +1,86 @@
 package com.dgsw.javasuhangminilet.review.service;
 
+import com.dgsw.javasuhangminilet.auth.entity.UserEntity;
+import com.dgsw.javasuhangminilet.auth.repository.AuthRepository;
 import com.dgsw.javasuhangminilet.review.dto.ReviewDTO;
+import com.dgsw.javasuhangminilet.review.dto.response.ReviewResponse;
 import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
+import com.dgsw.javasuhangminilet.util.ResponseCode;
+import com.dgsw.javasuhangminilet.util.TokenClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ReviewService {
-    @Autowired
-    ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+    private final AuthRepository authRepository;
 
-    public BaseResponse<String> addReview(ReviewDTO dto) {
-        ReviewEntity reviewEntity = new ReviewEntity();
-        reviewEntity.setUserId(dto.getUserId());
-        reviewEntity.setTitle(dto.getTitle());
-        reviewEntity.setContent(dto.getContent());
-        ReviewEntity saved = reviewRepository.save(reviewEntity);
-        String message = saved!=null? "created": "faild";
-        return BaseResponse.success(message);
+    public BaseResponse<ReviewResponse> addReview(ReviewDTO dto) {
+        Optional<UserEntity> user;
+        try{
+            user = getUserFromToken(dto.getToken());
+        } catch (Exception e) {
+            return BaseResponse.error(ResponseCode.FORBIDDEN,"접근이 불가능합니다.");
+        }
+        if(user.isEmpty()){
+            return BaseResponse.error(ResponseCode.NOT_FOUND,"그런 사람 또 없습니다.");
+        }
+        ReviewEntity savedEntity = reviewRepository.save(
+                ReviewEntity.builder()
+                        .user(user.get())
+                        .title(dto.getTitle())
+                        .content(dto.getContent())
+                        .build()
+        );
+        ReviewResponse response = new ReviewResponse(
+                savedEntity.getId(),
+                savedEntity.getUser(),
+                savedEntity.getTitle(),
+                savedEntity.getContent()
+        );
+        return BaseResponse.success(response);
     }
 
-    public List<ReviewDTO> getAllReviews() {
-        return reviewRepository.findAll().stream().map(entity -> {
-            ReviewDTO dto = new ReviewDTO();
-            dto.setId(entity.getId());
-            dto.setUserId(entity.getUserId());
-            dto.setTitle(entity.getTitle());
-            dto.setContent(entity.getContent());
-            return dto;
-        }).collect(Collectors.toList());
+
+
+    public BaseResponse<List<ReviewResponse>> getAllReviews() {
+        List<ReviewResponse> reviews = reviewRepository.findAll().stream()
+                .map(entity -> new ReviewResponse(
+                        entity.getId(),
+                        entity.getUser(),
+                        entity.getTitle(),
+                        entity.getContent()
+                ))
+                .collect(Collectors.toList());
+        return BaseResponse.success(reviews);
     }
 
     public BaseResponse<String> updateReview(Long id, ReviewDTO dto) {
-        // 기존 리뷰를 ID로 찾기
-        ReviewEntity existing = reviewRepository.findById(id).orElse(null);
-        if (existing == null) return BaseResponse.success("faild");
-        // 값이 null이 아니면 해당 값으로 업데이트
-        if (dto.getTitle() != null) existing.setTitle(dto.getTitle()); // 제목 수정
-        if (dto.getContent() != null) existing.setContent(dto.getContent()); // 내용 수정
+        return BaseResponse.success("TODO");
+    }
+//
+//    public BaseResponse<String> deleteReview(Long id,String token ) {
+//        try{
+//            reviewRepository.deleteById(id);
+//            return BaseResponse.success("deleted");
+//        } catch (Exception e) {
+//            return BaseResponse.error(e.getMessage());
+//        }
+//    }
 
-        reviewRepository.save(existing); // 저장소에 다시 저장
-        return BaseResponse.success("updated"); // 성공
+
+    private Optional<UserEntity> getUserFromToken(String token) {
+        Long userId = TokenClient.getUserIdFromToken(token);
+        return authRepository.findById(userId);
     }
 }
