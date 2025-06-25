@@ -1,6 +1,8 @@
 package com.dgsw.javasuhangminilet.review.service;
 
+import com.dgsw.javasuhangminilet.review.dto.CreateReviewDTO;
 import com.dgsw.javasuhangminilet.review.dto.ReviewDTO;
+import com.dgsw.javasuhangminilet.review.dto.UpdateReviewDTO;
 import com.dgsw.javasuhangminilet.review.entity.ReviewEntity;
 import com.dgsw.javasuhangminilet.review.repository.ReviewRepository;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
@@ -17,7 +19,7 @@ public class ReviewService {
     @Autowired
     ReviewRepository reviewRepository;
 
-    public BaseResponse<String> addReview(ReviewDTO dto) {
+    public BaseResponse<String> addReview(CreateReviewDTO dto) {
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setUserId(dto.getUserId());
         reviewEntity.setTitle(dto.getTitle());
@@ -38,7 +40,7 @@ public class ReviewService {
         }).collect(Collectors.toList());
     }
 
-    public BaseResponse<String> updateReview(Long id, ReviewDTO dto) {
+    public BaseResponse<String> updateReview(Long id, UpdateReviewDTO dto) {
         // 기존 리뷰를 ID로 찾기
         ReviewEntity existing = reviewRepository.findById(id).orElse(null);
         if (existing == null) return BaseResponse.success("faild");
