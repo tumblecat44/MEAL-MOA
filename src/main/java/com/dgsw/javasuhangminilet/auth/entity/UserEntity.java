@@ -34,12 +34,6 @@ public class UserEntity {
     @OneToMany
     private List<ReviewEntity> reviews;
 
-    // 비즈니스 로직용 생성자
-    public UserEntity(String password, String name, String token) {
-        this.password = password;
-        this.name = name;
-        this.token = token;
-    }
     @PostPersist
     public void generateToken() {
         if (this.id != null && this.token == null) {
