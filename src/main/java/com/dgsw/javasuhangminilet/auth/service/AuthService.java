@@ -79,6 +79,10 @@ public class AuthService {
     }
 
     public BaseResponse<LoginResponse> changeName(TokenRequest authRequest, String token) {
+        Optional<UserEntity> existingUser = authRepository.findByName(authRequest.name());
+        if (existingUser.isPresent()) {
+            return BaseResponse.error(ResponseCode.CONFLICT, "이미 사용자가 존재합니다.");
+        }
         Optional<UserEntity> user = authRepository.findByToken(token);
         if (user.isEmpty()) {
             return BaseResponse.error(ResponseCode.FORBIDDEN, "당신의 계정이 아닙니다.");
