@@ -1,9 +1,13 @@
 package com.dgsw.javasuhangminilet.review.controlller;
 
 import com.dgsw.javasuhangminilet.review.dto.*;
+import com.dgsw.javasuhangminilet.review.dto.request.AddReviewRequest;
+import com.dgsw.javasuhangminilet.review.dto.response.ReviewResponse;
 import com.dgsw.javasuhangminilet.review.service.ReviewService;
 import com.dgsw.javasuhangminilet.util.BaseResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,20 +15,19 @@ import java.util.List;
 
 @RestController
 @Slf4j
-public class reviewController {
-    ReviewService reviewService;
+@RequiredArgsConstructor
+public class ReviewController {
+    private final ReviewService reviewService;
 
     @PostMapping("/review")
-    public BaseResponse<String> addReview(@RequestBody @Valid ReviewDTO dto) {
-        log.info("review ID: " + dto.getId());
-        log.info("User ID: " + dto.getUserId());
-        log.info("review title: " + dto.getTitle());
-        log.info("review content: " + dto.getContent());
-        return reviewService.addReview(dto);
+    public BaseResponse<ReviewResponse> addReview(@RequestBody @Valid AddReviewRequest dto,@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+        log.info("review ID: " + dto.title());
+        log.info("User ID: " + dto.content());
+        return reviewService.addReview(new ReviewDTO(token, dto.title(), dto.content()));
     }
 
     @GetMapping("/reviews")
-    public List<ReviewDTO> getAllReviews() {
+    public BaseResponse<List<ReviewResponse>> getAllReviews() {
         return reviewService.getAllReviews();
     }
 
@@ -32,4 +35,9 @@ public class reviewController {
     public BaseResponse<String> updateReview(@PathVariable Long id, @RequestBody ReviewDTO dto) {
         return reviewService.updateReview(id, dto);
     }
+//
+//    @DeleteMapping("/update/{id}")
+//    public BaseResponse<String> deleteReview(@PathVariable Long id, @RequestHeader("Authorization") String token) {
+//        return reviewService.deleteReview(id, token);
+//    }
 }
