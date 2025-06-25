@@ -1,4 +1,4 @@
 package com.dgsw.javasuhangminilet.auth.dto.response;
 
-public record LoginResponse(String token) {
+public record LoginResponse(String name, String token) {
 }

@@ -72,14 +72,14 @@ public class AuthService {
         UserEntity foundUser = user.get();
 
         if (passwordEncoder.matches(authRequest.password(), foundUser.getPassword())) {
-            return BaseResponse.success(new LoginResponse(foundUser.getToken()));
+            return BaseResponse.success(new LoginResponse(foundUser.getName(), foundUser.getToken()));
         }
 
         return BaseResponse.error(ResponseCode.NOT_FOUND, "Wrong Password.");
     }
 
-    public BaseResponse<LoginResponse> changeName(TokenRequest authRequest) {
-        Optional<UserEntity> user = authRepository.findByToken(authRequest.token());
+    public BaseResponse<LoginResponse> changeName(TokenRequest authRequest, String token) {
+        Optional<UserEntity> user = authRepository.findByToken(token);
         if (user.isEmpty()) {
             return BaseResponse.error(ResponseCode.FORBIDDEN, "당신의 계정이 아닙니다.");
         }
@@ -88,6 +88,6 @@ public class AuthService {
         foundUser.setName(authRequest.name());
         authRepository.save(foundUser);
 
-        return BaseResponse.success(new LoginResponse(foundUser.getToken()));
+        return BaseResponse.success(new LoginResponse(foundUser.getName(), foundUser.getToken()));
     }
 }
