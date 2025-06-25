@@ -1,11 +1,9 @@
 package com.dgsw.javasuhangminilet.util;
 
-import org.springframework.context.annotation.Bean;
 
 
 public class TokenClient {
-    @Bean
-    public Long getUserIdFromToken(String token) {
+    public static Long getUserIdFromToken(String token) {
         String[] parts = token.split("_");
         if (parts.length >= 2) {
             return Long.parseLong(parts[0]);
