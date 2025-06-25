@@ -1,6 +1,7 @@
 package com.dgsw.javasuhangminilet.auth.service;
 
-import com.dgsw.javasuhangminilet.auth.dto.AuthRequest;
+import com.dgsw.javasuhangminilet.auth.dto.request.AuthRequest;
+import com.dgsw.javasuhangminilet.auth.dto.request.TokenRequest;
 import com.dgsw.javasuhangminilet.auth.dto.response.LoginResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.RegisterResponse;
 import com.dgsw.javasuhangminilet.auth.entity.UserEntity;
@@ -30,7 +31,7 @@ public class AuthService {
             if (authRepository.existsByName(authRequest.name())) {
                 return BaseResponse.error(ResponseCode.DUPLICATE_RESOURCE, "이미 존재하는 사용자명입니다.");
             }
-            
+
             // 4. 사용자 저장
             UserEntity user = UserEntity.builder()
                     .password(authRequest.password())
@@ -63,11 +64,24 @@ public class AuthService {
     public BaseResponse<LoginResponse> login(AuthRequest authRequest) {
         Optional<UserEntity> user = authRepository.findByName(authRequest.name());
         if (user.isEmpty()) {
-            return BaseResponse.error("실패");
+            return BaseResponse.error(ResponseCode.NOT_FOUND, "그런 사람 또 없습니다..");
         }
         if (authRequest.name().equals(user.get().getName()) && authRequest.password().equals(user.get().getPassword())) {
             return BaseResponse.success(new LoginResponse(user.get().getToken()));
-         }
-        return BaseResponse.error(ResponseCode.NOT_FOUND,"비밀번호나 이름이 틀렸습니다.");
+        }
+        return BaseResponse.error(ResponseCode.NOT_FOUND, "Wrong Password.");
+    }
+
+    public BaseResponse<LoginResponse> changeName(TokenRequest authRequest) {
+        Optional<UserEntity> user = authRepository.findByToken(authRequest.token());
+        if (user.isEmpty()) {
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "당신의 계정이 아닙니다.");
+        }
+
+        UserEntity foundUser = user.get();
+        foundUser.setName(authRequest.name());
+        authRepository.save(foundUser);
+
+        return BaseResponse.success(new LoginResponse(foundUser.getToken()));
     }
 }
