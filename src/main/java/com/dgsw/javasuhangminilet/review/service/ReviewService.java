@@ -77,7 +77,7 @@ public class ReviewService {
 
     public BaseResponse<String> updateReview(Long id, UpdateReviewRequest dto, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
-        if(optional == null){
+        if(optional.isEmpty()){
             return BaseResponse.error("존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
@@ -92,14 +92,13 @@ public class ReviewService {
 
     public BaseResponse<String> deleteReview(Long id, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
-        if(optional == null ){
+        if(optional.isEmpty()){
             return BaseResponse.error("존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
         if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
             return BaseResponse.error("본인 글만 삭제 가능합니다.");
         }
-        ReviewEntity existingReview = optional.get();
         reviewRepository.delete(existingReview);
         return BaseResponse.success("deleted");
     }
