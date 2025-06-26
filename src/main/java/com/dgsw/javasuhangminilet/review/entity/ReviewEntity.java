@@ -16,6 +16,7 @@ public class ReviewEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동으로 ID 증가
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private UserEntity user;
     @Column(nullable = false)
     private String title;
