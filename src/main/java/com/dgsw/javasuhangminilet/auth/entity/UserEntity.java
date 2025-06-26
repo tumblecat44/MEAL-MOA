@@ -24,7 +24,4 @@ public class UserEntity {
 
     @Column(unique = true, nullable = false, length = 100)
     private String name;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ReviewEntity> reviews;
 }
