@@ -12,3 +12,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+# JWT 설정
+jwt:
+  secret: vg2np4fJ3ZpDCXDiPKp6/Paa0S2OxDjy53QhP+IuJrDHRTM3/zfestYTD40KAzh6tYEwzW3Oqe6e2+SexqDpeA==
+  access-token-validity: 3600000
+  refresh-token-validity: 86400000

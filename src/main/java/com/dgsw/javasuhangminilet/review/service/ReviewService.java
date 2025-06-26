@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final AuthRepository authRepository;
+    private final TokenClient tokenClient;
 
     public BaseResponse<ReviewResponse> addReview(ReviewDTO dto) {
         Optional<UserEntity> user;
@@ -77,11 +78,11 @@ public class ReviewService {
 
     public BaseResponse<ResponseCode> updateReview(Long id, UpdateReviewRequest dto, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
-        if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
+        if (existingReview.getUser().getId() != getUserFromToken(token).get().getId()) {
             return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
         }
         existingReview.setTitle(dto.getTitle());
@@ -92,29 +93,24 @@ public class ReviewService {
 
     public BaseResponse<ResponseCode> deleteReview(Long id, String token) {
         Optional<ReviewEntity> optional = reviewRepository.findById(id);
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
-        if(existingReview.getUser().getId()==getUserFromToken(token).get().getId()){
+        if (existingReview.getUser().getId() != getUserFromToken(token).get().getId()) {
             return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
         }
         reviewRepository.delete(existingReview);
         return BaseResponse.success(ResponseCode.SUCCESS, "deleted");
     }
-//
-//    public BaseResponse<String> deleteReview(Long id,String token ) {
-//        try{
-//            reviewRepository.deleteById(id);
-//            return BaseResponse.success("deleted");
-//        } catch (Exception e) {
-//            return BaseResponse.error(e.getMessage());
-//        }
-//    }
-
 
     private Optional<UserEntity> getUserFromToken(String token) {
-        Long userId = TokenClient.getUserIdFromToken(token);
-        return authRepository.findById(userId);
+        try {
+            Long userId = tokenClient.extractUserIdFromToken(token);
+            return authRepository.findById(userId);
+        } catch (Exception e) {
+            log.error("토큰에서 사용자 ID 추출 실패: {}", e.getMessage());
+            throw new RuntimeException("유효하지 않은 토큰입니다.");
+        }
     }
 }
