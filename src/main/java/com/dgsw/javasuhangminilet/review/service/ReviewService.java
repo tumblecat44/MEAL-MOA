@@ -96,8 +96,8 @@ public class ReviewService {
             return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
         }
         ReviewEntity existingReview = optional.get();
-        if (existingReview.getUser().getId() != getUserFromToken(token).get().getId()) {
-            return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
+        if(existingReview.getUser().getId() != getUserFromToken(token).get().getId()){
+            return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 삭제 가능합니다.");
         }
         reviewRepository.delete(existingReview);
         return BaseResponse.success(ResponseCode.SUCCESS, "deleted");
