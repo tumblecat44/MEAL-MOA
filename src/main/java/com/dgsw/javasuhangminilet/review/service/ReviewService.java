@@ -76,34 +76,50 @@ public class ReviewService {
     }
 
     public BaseResponse<ResponseCode> updateReview(Long id, UpdateReviewRequest dto, String token) {
-        ReviewEntity existingReview = validateReviewOwnership(id, token);
+        try {
+            ReviewEntity existingReview = validateReviewOwnership(id, token);
 
-        existingReview.setTitle(dto.getTitle());
-        existingReview.setContent(dto.getContent());
-        reviewRepository.save(existingReview);
+            existingReview.setTitle(dto.getTitle());
+            existingReview.setContent(dto.getContent());
+            reviewRepository.save(existingReview);
 
-        return BaseResponse.success(ResponseCode.SUCCESS, "updated");
+            return BaseResponse.success(ResponseCode.SUCCESS, "updated");
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("NOT_FOUND")) {
+                return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
+            } else {
+                return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
+            }
+        }
     }
 
     public BaseResponse<ResponseCode> deleteReview(Long id, String token) {
-        ReviewEntity existingReview = validateReviewOwnership(id, token);
-        reviewRepository.delete(existingReview);
-        return BaseResponse.success(ResponseCode.SUCCESS, "deleted");
+        try {
+            ReviewEntity existingReview = validateReviewOwnership(id, token);
+            reviewRepository.delete(existingReview);
+            return BaseResponse.success(ResponseCode.SUCCESS, "deleted");
+        } catch (RuntimeException e) {
+            if (e.getMessage().startsWith("NOT_FOUND")) {
+                return BaseResponse.error(ResponseCode.NOT_FOUND, "존재하지 않음");
+            } else {
+                return BaseResponse.error(ResponseCode.FORBIDDEN, "본인 글만 수정 가능합니다.");
+            }
+        }
     }
 
-private ReviewEntity validateReviewOwnership(Long id, String token) {
-    Optional<ReviewEntity> optional = reviewRepository.findById(id);
-    if (optional.isEmpty()) {
-        throw new RuntimeException("NOT_FOUND: 존재하지 않음");
-    }
+    private ReviewEntity validateReviewOwnership(Long id, String token) {
+        Optional<ReviewEntity> optional = reviewRepository.findById(id);
+        if (optional.isEmpty()) {
+            throw new RuntimeException("NOT_FOUND: 존재하지 않음");
+        }
 
-    ReviewEntity existingReview = optional.get();
-    if (!existingReview.getUser().getId().equals(getUserFromToken(token).get().getId())) {
-        throw new RuntimeException("FORBIDDEN: 본인 글만 수정 가능합니다.");
-    }
+        ReviewEntity existingReview = optional.get();
+        if (!existingReview.getUser().getId().equals(getUserFromToken(token).get().getId())) {
+            throw new RuntimeException("FORBIDDEN: 본인 글만 수정 가능합니다.");
+        }
 
-    return existingReview;
-}
+        return existingReview;
+    }
 
 //
 //    public BaseResponse<String> deleteReview(Long id,String token ) {
@@ -116,8 +132,8 @@ private ReviewEntity validateReviewOwnership(Long id, String token) {
 //    }
 
 
-private Optional<UserEntity> getUserFromToken(String token) {
-    Long userId = TokenClient.getUserIdFromToken(token);
-    return authRepository.findById(userId);
-}
+    private Optional<UserEntity> getUserFromToken(String token) {
+        Long userId = TokenClient.getUserIdFromToken(token);
+        return authRepository.findById(userId);
+    }
 }
