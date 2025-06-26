@@ -2,6 +2,7 @@ package com.dgsw.javasuhangminilet.auth.controller;
 
 import com.dgsw.javasuhangminilet.auth.dto.request.AuthRequest;
 import com.dgsw.javasuhangminilet.auth.dto.request.TokenRequest;
+import com.dgsw.javasuhangminilet.auth.dto.response.InfoResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.LoginResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.RegisterResponse;
 import com.dgsw.javasuhangminilet.auth.service.AuthService;
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     @GetMapping("/info")
-    public BaseResponse<LoginResponse> info(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+    public BaseResponse<InfoResponse> info(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         if (token == null) {
             return BaseResponse.error(ResponseCode.UNAUTHORIZED, "토큰을 넣어주세요");
         }

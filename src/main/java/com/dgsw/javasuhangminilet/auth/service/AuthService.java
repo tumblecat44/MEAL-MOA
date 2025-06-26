@@ -2,6 +2,7 @@ package com.dgsw.javasuhangminilet.auth.service;
 
 import com.dgsw.javasuhangminilet.auth.dto.request.AuthRequest;
 import com.dgsw.javasuhangminilet.auth.dto.request.TokenRequest;
+import com.dgsw.javasuhangminilet.auth.dto.response.InfoResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.LoginResponse;
 import com.dgsw.javasuhangminilet.auth.dto.response.RegisterResponse;
 import com.dgsw.javasuhangminilet.auth.entity.UserEntity;
@@ -53,16 +54,14 @@ public class AuthService {
         return BaseResponse.success(response, "회원가입이 완료되었습니다.");
     }
 
-    public BaseResponse<LoginResponse> info(String token) {
+    public BaseResponse<InfoResponse> info(String token) {
         try {
             Long userId = tokenClient.extractUserIdFromToken(token);
             Optional<UserEntity> user = authRepository.findById(userId);
             
             if (user.isPresent()) {
                 UserEntity userEntity = user.get();
-                // 새로운 JWT 토큰 생성
-                String newToken = jwtTokenProvider.generateToken(userEntity.getId(), userEntity.getName());
-                return BaseResponse.success(new LoginResponse(userEntity.getName(), newToken));
+                return BaseResponse.success(new InfoResponse(userEntity.getName()));
             }
             return BaseResponse.error(ResponseCode.NOT_FOUND, "사용자를 찾을 수 없습니다.");
         } catch (Exception e) {

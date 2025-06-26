@@ -23,14 +23,14 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @PostMapping("/review")
+    @PostMapping("/")
     public BaseResponse<ReviewResponse> addReview(@RequestBody @Valid AddReviewRequest dto,@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         log.info("review ID: " + dto.title());
         log.info("User ID: " + dto.content());
         return reviewService.addReview(new ReviewDTO(token, dto.title(), dto.content()));
     }
 
-    @GetMapping("/reviews")
+    @GetMapping("/")
     public BaseResponse<List<ReviewResponse>> getAllReviews(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
         return reviewService.getAllReviews(token);
     }
