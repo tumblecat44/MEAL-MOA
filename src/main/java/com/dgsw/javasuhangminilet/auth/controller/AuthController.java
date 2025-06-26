@@ -9,10 +9,7 @@ import com.dgsw.javasuhangminilet.util.BaseResponse;
 import com.dgsw.javasuhangminilet.util.ResponseCode;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("/auth")
 @RequiredArgsConstructor
@@ -35,5 +32,13 @@ public class AuthController {
             return BaseResponse.error(ResponseCode.UNAUTHORIZED, "토큰을 넣어주세요");
         }
         return authService.changeName(tokenRequest, token);
+    }
+
+    @GetMapping("/info")
+    public BaseResponse<LoginResponse> info(@Parameter(hidden = true) @RequestHeader(value = "Authorization", required = false) String token) {
+        if (token == null) {
+            return BaseResponse.error(ResponseCode.UNAUTHORIZED, "토큰을 넣어주세요");
+        }
+        return authService.info(token);
     }
 }
