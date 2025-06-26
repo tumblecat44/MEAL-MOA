@@ -17,6 +17,7 @@ public enum ResponseCode {
     NOT_FOUND("404", "요청한 리소스를 찾을 수 없습니다."),
     METHOD_NOT_ALLOWED("405", "허용되지 않은 HTTP 메서드입니다."),
     VALIDATION_ERROR("422", "입력값 검증에 실패했습니다."),
+    CONFLICT("409", "요청이 현재 리소스 상태와 충돌합니다."),
 
     // 서버 에러
     INTERNAL_SERVER_ERROR("500", "서버 내부 오류가 발생했습니다."),

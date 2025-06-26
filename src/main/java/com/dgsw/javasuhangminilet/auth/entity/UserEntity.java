@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
-
 
 @Entity
 @Table(name = "users")
@@ -24,20 +22,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
-
     @Column(unique = true, nullable = false, length = 100)
     private String name;
 
-    @Column(length = 500)
-    private String token;
-
-    @OneToMany
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ReviewEntity> reviews;
-
-    @PostPersist
-    public void generateToken() {
-        if (this.id != null && this.token == null) {
-            this.token = this.id + "_" + UUID.randomUUID().toString();
-        }
-    }
 }
