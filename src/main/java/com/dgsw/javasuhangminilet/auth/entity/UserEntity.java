@@ -31,8 +31,6 @@ public class UserEntity {
     @Column(length = 500)
     private String token;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    private List<ReviewEntity> reviews;
 
     @PostPersist
     public void generateToken() {
